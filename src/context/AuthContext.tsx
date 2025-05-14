@@ -23,8 +23,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Check if user is logged in from localStorage
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+      try {
+        setUser(JSON.parse(storedUser));
+        setIsAuthenticated(true);
+      } catch (error) {
+        // If there's an error parsing the stored user, clear localStorage
+        localStorage.removeItem('currentUser');
+        console.error("Error parsing stored user:", error);
+      }
     }
   }, []);
 
