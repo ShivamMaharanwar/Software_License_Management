@@ -10,7 +10,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'
 
 export default function DashboardCharts() {
   const { applications } = useApplications();
-  const [selectedApp, setSelectedApp] = useState<string>("all");
+  const [selectedApp, setSelectedApp] = useState<string>("all"); // Changed from "all" to ensure consistency
   const [typeData, setTypeData] = useState<ChartData[]>([]);
   const [departmentData, setDepartmentData] = useState<ChartData[]>([]);
 

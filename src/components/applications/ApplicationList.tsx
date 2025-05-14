@@ -26,7 +26,7 @@ interface ApplicationListProps {
 export default function ApplicationList({ onEdit }: ApplicationListProps) {
   const { applications, setSelectedApp, deleteApplication } = useApplications();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState<string>("");
+  const [filterType, setFilterType] = useState<string>("all"); // Changed from empty string to "all"
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [appToDelete, setAppToDelete] = useState<string | null>(null);
 
@@ -53,7 +53,7 @@ export default function ApplicationList({ onEdit }: ApplicationListProps) {
   const filteredApplications = applications.filter(app => {
     const nameMatch = app.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                      app.managerName.toLowerCase().includes(searchQuery.toLowerCase());
-    const typeMatch = filterType ? app.applicationType === filterType : true;
+    const typeMatch = filterType === "all" ? true : app.applicationType === filterType; // Updated this condition
     return nameMatch && typeMatch;
   });
 
@@ -77,7 +77,7 @@ export default function ApplicationList({ onEdit }: ApplicationListProps) {
             <SelectValue placeholder="All application types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All application types</SelectItem>
+            <SelectItem value="all">All application types</SelectItem>
             {applicationTypes.map((type) => (
               <SelectItem key={type} value={type}>{type}</SelectItem>
             ))}
