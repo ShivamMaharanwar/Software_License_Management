@@ -18,6 +18,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface ApplicationListProps {
   onEdit: (id: string) => void;
@@ -26,9 +34,11 @@ interface ApplicationListProps {
 export default function ApplicationList({ onEdit }: ApplicationListProps) {
   const { applications, setSelectedApp, deleteApplication } = useApplications();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState<string>("all"); // Changed from empty string to "all"
+  const [filterType, setFilterType] = useState<string>("all");
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [appToDelete, setAppToDelete] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Number of items to show per page
 
   const handleViewClick = (appId: string) => {
     const app = applications.find(a => a.id === appId);
@@ -53,9 +63,26 @@ export default function ApplicationList({ onEdit }: ApplicationListProps) {
   const filteredApplications = applications.filter(app => {
     const nameMatch = app.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                      app.managerName.toLowerCase().includes(searchQuery.toLowerCase());
-    const typeMatch = filterType === "all" ? true : app.applicationType === filterType; // Updated this condition
+    const typeMatch = filterType === "all" ? true : app.applicationType === filterType;
     return nameMatch && typeMatch;
   });
+
+  // Calculate pagination values
+  const totalPages = Math.ceil(filteredApplications.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedApplications = filteredApplications.slice(startIndex, startIndex + itemsPerPage);
+  
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -97,8 +124,8 @@ export default function ApplicationList({ onEdit }: ApplicationListProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredApplications.length > 0 ? (
-              filteredApplications.map((app) => (
+            {paginatedApplications.length > 0 ? (
+              paginatedApplications.map((app) => (
                 <TableRow key={app.id}>
                   <TableCell className="font-medium">{app.name}</TableCell>
                   <TableCell>
@@ -150,6 +177,30 @@ export default function ApplicationList({ onEdit }: ApplicationListProps) {
           </TableBody>
         </Table>
       </div>
+      
+      {totalPages > 1 && (
+        <Pagination className="mt-4">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={handlePreviousPage} 
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+              />
+            </PaginationItem>
+            <PaginationItem>
+              <span className="flex items-center justify-center px-4">
+                Page {currentPage} of {totalPages}
+              </span>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext 
+                onClick={handleNextPage}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
 
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <AlertDialogContent>
