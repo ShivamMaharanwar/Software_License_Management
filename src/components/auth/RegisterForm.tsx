@@ -29,8 +29,13 @@ export default function RegisterForm({ onToggleForm }: RegisterFormProps) {
     }
 
     setIsLoading(true);
-    await register(name, email, password);
+    const success = await register(name, email, password);
     setIsLoading(false);
+    
+    if (success) {
+      // Redirect to login form after successful registration
+      onToggleForm();
+    }
   };
 
   return (

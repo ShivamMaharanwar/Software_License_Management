@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { loadUsers, saveUsers } from '../data/mockData';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { User } from '@/types';
 
 interface AuthContextType {
@@ -86,14 +86,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const updatedUsers = [...users, newUser];
     saveUsers(updatedUsers);
     
-    // Automatically log in
-    setUser(newUser);
-    setIsAuthenticated(true);
-    localStorage.setItem('currentUser', JSON.stringify(newUser));
-
+    // No longer automatically logging in after registration
     toast({
       title: "Registration successful",
-      description: "Your account has been created",
+      description: "Your account has been created. Please log in.",
     });
     return true;
   };
